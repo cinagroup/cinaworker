@@ -3,14 +3,14 @@
 
 set -e
 
-SESSION_NAME="moltworker-e2e"
+SESSION_NAME="cinaworker-e2e"
 
 if [ -z "$CCTR_FIXTURE_DIR" ]; then
     CCTR_FIXTURE_DIR="/tmp/e2e-cloud-manual"
 fi
 
-mkdir -p /tmp/moltworker-e2e-videos
-VIDEO_PATH="/tmp/moltworker-e2e-videos/$(date +%Y%m%d-%H%M%S).mp4"
+mkdir -p /tmp/cinaworker-e2e-videos
+VIDEO_PATH="/tmp/cinaworker-e2e-videos/$(date +%Y%m%d-%H%M%S).mp4"
 echo "$VIDEO_PATH" > "$CCTR_FIXTURE_DIR/video-path.txt"
 
 plwr -S "$SESSION_NAME" start --video "$VIDEO_PATH" >&2

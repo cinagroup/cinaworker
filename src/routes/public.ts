@@ -16,7 +16,7 @@ const publicRoutes = new Hono<AppEnv>();
 publicRoutes.get('/sandbox-health', (c) => {
   return c.json({
     status: 'ok',
-    service: 'openclaw-sandbox',
+    service: 'cinaworker',
     gateway_port: GATEWAY_PORT,
   });
 });
@@ -29,6 +29,17 @@ publicRoutes.get('/logo.png', (c) => {
 // GET /logo-small.png - Serve small logo from ASSETS binding
 publicRoutes.get('/logo-small.png', (c) => {
   return c.env.ASSETS.fetch(c.req.raw);
+});
+
+// GET /favicon.ico - Serve favicon from ASSETS binding
+publicRoutes.get('/favicon.ico', (c) => {
+  return c.env.ASSETS.fetch(c.req.raw);
+});
+
+// GET /_admin/favicon.ico - Vite rewrites the admin favicon URL under the admin base path
+publicRoutes.get('/_admin/favicon.ico', (c) => {
+  const url = new URL('/favicon.ico', c.req.url);
+  return c.env.ASSETS.fetch(new Request(url.toString(), c.req.raw));
 });
 
 // GET /api/status - Public health check for gateway status (no auth required)

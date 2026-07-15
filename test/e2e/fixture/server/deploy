@@ -9,7 +9,7 @@ if [ -n "$CCTR_TEST_PATH" ]; then
     PROJECT_DIR="$(cd "$CCTR_TEST_PATH/../.." && pwd)"
 else
     # Running directly: SCRIPT_DIR is fixture/server/, project root is 4 levels up
-    # fixture/server/ -> fixture/ -> test/e2e/ -> test/ -> moltworker/
+    # fixture/server/ -> fixture/ -> test/e2e/ -> test/ -> cinaworker/
     PROJECT_DIR="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 fi
 
@@ -18,7 +18,7 @@ fi
 : "${CF_ACCOUNT_ID:?CF_ACCOUNT_ID is required}"
 : "${R2_ACCESS_KEY_ID:?R2_ACCESS_KEY_ID is required}"
 : "${R2_SECRET_ACCESS_KEY:?R2_SECRET_ACCESS_KEY is required}"
-: "${MOLTBOT_GATEWAY_TOKEN:?MOLTBOT_GATEWAY_TOKEN is required}"
+: "${CINAWORKER_GATEWAY_TOKEN:?CINAWORKER_GATEWAY_TOKEN is required}"
 
 # Read terraform outputs
 TERRAFORM_OUTPUT="$1"
@@ -48,8 +48,8 @@ E2E_CONFIG="$PROJECT_DIR/.wrangler-e2e-$WORKER_NAME.jsonc"
 echo "Generating e2e config: $E2E_CONFIG" >&2
 
 # Copy config, replace the worker name and R2 bucket name for this e2e run
-sed -e 's/"name": "moltbot-sandbox"/"name": "'"$WORKER_NAME"'"/' \
-    -e 's/"bucket_name": "moltbot-data"/"bucket_name": "'"$R2_BUCKET"'"/' \
+sed -e 's/"name": "cinaworker"/"name": "'"$WORKER_NAME"'"/' \
+    -e 's/"bucket_name": "cinaworker-data"/"bucket_name": "'"$R2_BUCKET"'"/' \
     "$PROJECT_DIR/wrangler.jsonc" > "$E2E_CONFIG"
 
 # Deploy using the e2e-specific config (retry on Docker Hub rate limits)
@@ -84,7 +84,7 @@ rm -f "$E2E_CONFIG"
 
 # Set secrets for the deployed worker
 echo "Setting worker secrets..." >&2
-echo "$MOLTBOT_GATEWAY_TOKEN" | npx wrangler secret put MOLTBOT_GATEWAY_TOKEN --name "$WORKER_NAME" >&2
+echo "$CINAWORKER_GATEWAY_TOKEN" | npx wrangler secret put CINAWORKER_GATEWAY_TOKEN --name "$WORKER_NAME" >&2
 echo "$CF_ACCESS_TEAM_DOMAIN" | npx wrangler secret put CF_ACCESS_TEAM_DOMAIN --name "$WORKER_NAME" >&2
 echo "$R2_ACCESS_KEY_ID" | npx wrangler secret put R2_ACCESS_KEY_ID --name "$WORKER_NAME" >&2
 echo "$R2_SECRET_ACCESS_KEY" | npx wrangler secret put R2_SECRET_ACCESS_KEY --name "$WORKER_NAME" >&2

@@ -1,10 +1,10 @@
-# E2E tests for Moltworker
+# E2E tests for cinaworker
 
-End-to-end tests that deploy real Moltworker instances to Cloudflare infrastructure.
+End-to-end tests that deploy real cinaworker instances to Cloudflare infrastructure.
 
 ## Why cloud-based e2e tests?
 
-These tests run against actual Cloudflare infrastructure—the same environment users get when they deploy Moltworker themselves. This catches issues that local testing can't:
+These tests run against actual Cloudflare infrastructure—the same environment users get when they deploy cinaworker themselves. This catches issues that local testing can't:
 
 - **R2 bucket mounting** only works in production (not with `wrangler dev`)
 - **Container cold starts** and sandbox behavior
@@ -37,7 +37,7 @@ These tests run against actual Cloudflare infrastructure—the same environment 
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                         Deployed worker                                 │
 │                                                                         │
-│   https://moltbot-sandbox-e2e-{id}.{subdomain}.workers.dev              │
+│   https://cinaworker-e2e-{id}.{subdomain}.workers.dev                   │
 │                                                                         │
 │   Protected by Cloudflare Access:                                       │
 │   - Service token (for automated tests)                                 │
@@ -75,7 +75,7 @@ navigate to admin page to approve device
 ===
 TOKEN=$(cat "$CCTR_FIXTURE_DIR/gateway-token.txt")
 WORKER_URL=$(cat "$CCTR_FIXTURE_DIR/worker-url.txt")
-plwr -S moltworker-e2e open "$WORKER_URL/_admin/?token=$TOKEN"
+plwr -S cinaworker-e2e open "$WORKER_URL/_admin/?token=$TOKEN"
 ---
 ```
 
@@ -110,27 +110,27 @@ Here's a complete test that approves a device and sends a chat message:
 wait for Approve All button and click it
 %require
 ===
-plwr -S moltworker-e2e click 'button:has-text("Approve All")' -T 120000
+plwr -S cinaworker-e2e click 'button:has-text("Approve All")' -T 120000
 ---
 
 ===
 wait for approval to complete
 %require
 ===
-plwr -S moltworker-e2e wait 'text=No pending pairing requests' -T 120000
+plwr -S cinaworker-e2e wait 'text=No pending pairing requests' -T 120000
 ---
 
 ===
 type math question into chat
 %require
 ===
-plwr -S moltworker-e2e fill textarea 'What is 847293 + 651824? Reply with just the number.'
+plwr -S cinaworker-e2e fill textarea 'What is 847293 + 651824? Reply with just the number.'
 ---
 
 ===
 wait for response containing the correct answer
 ===
-plwr -S moltworker-e2e wait 'text=1499117' -T 120000
+plwr -S cinaworker-e2e wait 'text=1499117' -T 120000
 ---
 ```
 
@@ -168,4 +168,4 @@ PLAYWRIGHT_HEADED=1 cctr test/e2e/
 
 ### View test videos
 
-Videos are saved to `/tmp/moltworker-e2e-videos/` after each run.
+Videos are saved to `/tmp/cinaworker-e2e-videos/` after each run.

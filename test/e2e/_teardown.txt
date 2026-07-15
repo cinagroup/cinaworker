@@ -35,7 +35,7 @@ where
 * output contains "stopped"
 
 ===
-stop moltworker server and destroy cloud resources
+stop cinaworker server and destroy cloud resources
 ===
 # This deletes the worker AND destroys terraform resources (Access app, service token, R2 bucket)
 ./stop-server

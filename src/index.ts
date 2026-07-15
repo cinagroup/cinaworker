@@ -1,7 +1,7 @@
 /**
- * OpenClaw + Cloudflare Sandbox
+ * cinaworker + Cloudflare Sandbox
  *
- * This Worker runs OpenClaw personal AI assistant in a Cloudflare Sandbox container.
+ * This Worker runs cinaworker on top of OpenClaw in a Cloudflare Sandbox container.
  * It proxies all requests to the OpenClaw Gateway's web UI and WebSocket endpoint.
  *
  * Features:
@@ -14,7 +14,7 @@
  * - ANTHROPIC_API_KEY: Your Anthropic API key
  *
  * Optional secrets:
- * - MOLTBOT_GATEWAY_TOKEN: Token to protect gateway access
+ * - CINAWORKER_GATEWAY_TOKEN: Token to protect gateway access
  * - TELEGRAM_BOT_TOKEN: Telegram bot token
  * - DISCORD_BOT_TOKEN: Discord bot token
  * - SLACK_BOT_TOKEN + SLACK_APP_TOKEN: Slack tokens
@@ -24,12 +24,12 @@ import { Hono } from 'hono';
 import { getSandbox, Sandbox, type SandboxOptions } from '@cloudflare/sandbox';
 
 import type { AppEnv, OpenClawEnv } from './types';
-import { GATEWAY_PORT } from './config';
+import { GATEWAY_PORT, getGatewayToken } from './config';
 import { createAccessMiddleware } from './auth';
 import { ensureGateway, findExistingGatewayProcess, killGateway } from './gateway';
 import { publicRoutes, api, adminUi, debug, cdp } from './routes';
 import { redactSensitiveParams } from './utils/logging';
-import { restoreIfNeeded, createSnapshot } from './persistence';
+import { restoreIfNeeded } from './persistence';
 import { handleScheduled } from './cron/handler';
 import loadingPageHtml from './assets/loading.html';
 import configErrorHtml from './assets/config-error.html';
@@ -71,8 +71,8 @@ function validateRequiredEnv(env: OpenClawEnv): string[] {
   const missing: string[] = [];
   const isTestMode = env.DEV_MODE === 'true' || env.E2E_TEST_MODE === 'true';
 
-  if (!env.MOLTBOT_GATEWAY_TOKEN) {
-    missing.push('MOLTBOT_GATEWAY_TOKEN');
+  if (!getGatewayToken(env)) {
+    missing.push('CINAWORKER_GATEWAY_TOKEN');
   }
 
   // CF Access vars not required in dev/test mode since auth is skipped
@@ -319,9 +319,10 @@ app.all('*', async (c) => {
     // CF Access redirects strip query params, so authenticated users lose ?token=.
     // Since the user already passed CF Access auth, we inject the token server-side.
     let wsRequest = request;
-    if (c.env.MOLTBOT_GATEWAY_TOKEN && !url.searchParams.has('token')) {
+    const gatewayToken = getGatewayToken(c.env);
+    if (gatewayToken && !url.searchParams.has('token')) {
       const tokenUrl = new URL(url.toString());
-      tokenUrl.searchParams.set('token', c.env.MOLTBOT_GATEWAY_TOKEN);
+      tokenUrl.searchParams.set('token', gatewayToken);
       wsRequest = new Request(tokenUrl.toString(), request);
     }
 

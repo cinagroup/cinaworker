@@ -95,10 +95,25 @@ describe('buildEnvVars', () => {
   });
 
   // Gateway token mapping
-  it('maps MOLTBOT_GATEWAY_TOKEN to OPENCLAW_GATEWAY_TOKEN for container', () => {
-    const env = createMockEnv({ MOLTBOT_GATEWAY_TOKEN: 'my-token' });
+  it('maps CINAWORKER_GATEWAY_TOKEN to OPENCLAW_GATEWAY_TOKEN for container', () => {
+    const env = createMockEnv({ CINAWORKER_GATEWAY_TOKEN: 'my-token' });
     const result = buildEnvVars(env);
     expect(result.OPENCLAW_GATEWAY_TOKEN).toBe('my-token');
+  });
+
+  it('supports MOLTBOT_GATEWAY_TOKEN as a legacy gateway token alias', () => {
+    const env = createMockEnv({ MOLTBOT_GATEWAY_TOKEN: 'legacy-token' });
+    const result = buildEnvVars(env);
+    expect(result.OPENCLAW_GATEWAY_TOKEN).toBe('legacy-token');
+  });
+
+  it('prefers CINAWORKER_GATEWAY_TOKEN over the legacy alias', () => {
+    const env = createMockEnv({
+      CINAWORKER_GATEWAY_TOKEN: 'new-token',
+      MOLTBOT_GATEWAY_TOKEN: 'legacy-token',
+    });
+    const result = buildEnvVars(env);
+    expect(result.OPENCLAW_GATEWAY_TOKEN).toBe('new-token');
   });
 
   // Channel tokens
@@ -141,7 +156,7 @@ describe('buildEnvVars', () => {
   it('combines all env vars correctly', () => {
     const env = createMockEnv({
       ANTHROPIC_API_KEY: 'sk-key',
-      MOLTBOT_GATEWAY_TOKEN: 'token',
+      CINAWORKER_GATEWAY_TOKEN: 'token',
       TELEGRAM_BOT_TOKEN: 'tg',
     });
     const result = buildEnvVars(env);
