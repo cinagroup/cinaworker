@@ -2,7 +2,9 @@
 
 Run cinaworker, an [OpenClaw](https://github.com/openclaw/openclaw)-backed personal AI assistant, in a [Cloudflare Sandbox](https://developers.cloudflare.com/sandbox/).
 
-![cinaworker logo](./assets/logo.png)
+<p align="center">
+  <img src="./assets/logo.png" alt="cinaworker logo" width="160" />
+</p>
 
 > **Experimental:** This is a proof of concept demonstrating that cinaworker can run OpenClaw in Cloudflare Sandbox. It is not officially supported and may break without notice. Use at your own risk.
 
